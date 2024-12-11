@@ -22,7 +22,7 @@ class Router:
         """
         Aggiunge un vicino diretto al router, ne va specificato nome e costo del collegamento.
         """
-        self.neighbours.add(neighbour_name,cost)
+        self.neighbours[neighbour_name] = cost
         self.routing_table[neighbour_name] = (cost, "DIRECT")
 
         
@@ -67,10 +67,10 @@ class DV_network:
         """
         Inizializzazione della network, la lista dei router è inizializzata come vuota.
         """
-        self.routers = {}
+        self.routers = {} # Router nella network: {nome: Router}
         self.graph = nx.Graph()
         
-    def genera_network(self,n):
+    def generate_network(self,n):
         """
         Genera una network con connessioni casuali di n nodi, viene garantito che ogni 
         router abbia almeno un collegamento con un altro router. I pesi dei collegamenti
@@ -87,12 +87,11 @@ class DV_network:
         
         # Costruisco le connessioni iniziali per garantire ogni router abbia almeno una connsessione (peso random)
         for i in range(n - 1):
-            
-            node1_name = self.routers[i]
+            node1_name = f"R{i+1}"
             node2_name = f"R{i+2}"
-            peso = random.randint(1, 10)
-            self.graph.add_edge(node1_name, node2_name, weight=peso)
-            network.connect_routers(node1_name,node2_name,peso)
+            cost = random.randint(1, 10)
+            self.graph.add_edge(node1_name, node2_name, weight=cost)
+            self.connect_routers(node1_name,node2_name,cost)
         
         # Aggiungta di archi casuali extra alla rete (peso random)
         for i in range(n):
@@ -100,10 +99,10 @@ class DV_network:
                 node1_name = f"R{i+1}"
                 node2_name = f"R{j+1}"
                 # Aggiungi un arco solo se non esiste già
-                if not grafo.has_edge(node1_name, node2_name) and random.choice([True, False]):
-                    peso = random.randint(1, 10)
-                    grafo.add_edge(node1_name, node2_name, weight=peso)
-                    network.connect_routers(node1_name,node2_name,peso)
+                if not self.graph.has_edge(node1_name, node2_name) and random.choice([True, False]):
+                    cost = random.randint(1, 10)
+                    self.graph.add_edge(node1_name, node2_name, weight=cost)
+                    self.connect_routers(node1_name, node2_name, cost)
 
 
     def add_router(self, router):
@@ -114,10 +113,25 @@ class DV_network:
 
     def connect_routers(self, router1, router2, cost):
         """
-        Connessione di due router
+        Connessione di due router presenti nella network
+        
+        :param router1: Nome del router 1
+        :param router2: Nome del router 2
+        :param cost2: Costo del collegamento
         """
         self.routers[router1].add_neighbour(router2, cost)
         self.routers[router2].add_neighbour(router1, cost)
+        
+    def visualizza_grafo(self):
+        """
+        Visualizza il grafo della network
+
+        """
+        pos = nx.spring_layout(self.graph)  # Layout del grafo
+        labels = nx.get_edge_attributes(self.graph, 'weight')
+        nx.draw(self.graph, pos, with_labels=True, node_color='lightblue', node_size=500, font_size=10)
+        nx.draw_networkx_edge_labels(self.graph, pos, edge_labels=labels, font_color='red')
+        plt.show()
 
     # def simulate(self, iterations=10):
     #     """Simula l'aggiornamento delle tabelle di routing."""
