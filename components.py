@@ -1,8 +1,13 @@
-"""
-Classe router, modella il componenete fondamentale della rete su quale sarà possibile studiare il funzionamento del prtotocollo.
-Ogni router sarà caratterizzato da un nome e conterrà al suo interno la tabella di rooting.
-"""
+import random
+import sys
+import networkx as nx
+import matplotlib.pyplot as plt
+
 class Router:
+    """
+    Classe router, modella il componenete fondamentale della rete su quale sarà possibile studiare il funzionamento del prtotocollo.
+    Ogni router sarà caratterizzato da un nome e conterrà al suo interno la tabella di rooting.
+    """
     def __init__(self, name):
         """
         Inizializzazione router, passato come paramtero il nome.
@@ -52,6 +57,9 @@ class Router:
         for destination, (cost, next_hop) in self.routing_table.items():
             table_str += f"  Destinazione: {destination}, Costo: {cost}, Next Hop: {next_hop}\n"
         return table_str
+
+    def get_name(self):
+        return self.name
     
     
 class DV_network:
@@ -60,12 +68,49 @@ class DV_network:
         Inizializzazione della network, la lista dei router è inizializzata come vuota.
         """
         self.routers = {}
+        self.graph = nx.Graph()
+        
+    def genera_network(self,n):
+        """
+        Genera una network con connessioni casuali di n nodi, viene garantito che ogni 
+        router abbia almeno un collegamento con un altro router. I pesi dei collegamenti
+        sono assegnati casualmente.
+        
+        :param n: Numero di nodi del grafo
+        """
+        # Creazione degli n nodi del grafo e dei router
+        for i in range(n):
+            node_name = f"R{i+1}"
+            new_router = Router(node_name)
+            self.add_router(new_router)
+            self.graph.add_node(node_name)
+        
+        # Costruisco le connessioni iniziali per garantire ogni router abbia almeno una connsessione (peso random)
+        for i in range(n - 1):
+            
+            node1_name = self.routers[i]
+            node2_name = f"R{i+2}"
+            peso = random.randint(1, 10)
+            self.graph.add_edge(node1_name, node2_name, weight=peso)
+            network.connect_routers(node1_name,node2_name,peso)
+        
+        # Aggiungta di archi casuali extra alla rete (peso random)
+        for i in range(n):
+            for j in range(i + 1, n):
+                node1_name = f"R{i+1}"
+                node2_name = f"R{j+1}"
+                # Aggiungi un arco solo se non esiste già
+                if not grafo.has_edge(node1_name, node2_name) and random.choice([True, False]):
+                    peso = random.randint(1, 10)
+                    grafo.add_edge(node1_name, node2_name, weight=peso)
+                    network.connect_routers(node1_name,node2_name,peso)
 
-    def add_router(self, name):
+
+    def add_router(self, router):
         """
         Aggiunta di un router alla rete.
         """
-        self.routers[name] = Router(name)
+        self.routers[router.get_name()] = router
 
     def connect_routers(self, router1, router2, cost):
         """
