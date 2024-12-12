@@ -94,9 +94,15 @@ class Router:
         """
         Creazione di una stringa rappresentante in maniera leggibile la tabella di routing di un nodo
         """
+        # Header della tabella 
         table_str = f"Routing table di {self.name}:\n"
+        table_str += f"{'Destinazione':<15} {'Costo':<10} {'Next Hop':<15}\n"
+        table_str += "-" * 40 + "\n"
+
+        # Contenuto della tabella
         for destination, (cost, next_hop) in self.routing_table.items():
-            table_str += f"  Destinazione: {destination}, Costo: {cost}, Next Hop: {next_hop}\n"
+            table_str += f"{destination:<15} {cost:<10} {next_hop:<15}\n"
+
         return table_str
 
     def get_name(self):
@@ -184,13 +190,13 @@ class DV_network:
         labels = nx.get_edge_attributes(self.graph, 'weight')
 
         # Creazione della griglia per il layout della finestra
-        fig = plt.figure(figsize=(15, 10))
+        fig = plt.figure(figsize=(12, 80))
 
         # Disegno del grafo
         nx.draw(self.graph, pos, with_labels=True, node_color='lightblue', node_size=500, font_size=10)
         nx.draw_networkx_edge_labels(self.graph, pos, edge_labels=labels, font_color='red')
              
-        plt.show()
+        plt.tight_layout()
        
     def simulate(self):
         """
@@ -236,13 +242,14 @@ class DV_network:
             
 if __name__ == "__main__":
     # Richiede il numero di nodi all'utente
-    n = int(input("Inserisci il numero di nodi del grafo (min 2, max 10): "))
+    n = int(input("Inserisci il numero di nodi del grafo (min 2, max 16): "))
 
-    if n > 2 and n <= 20:
+    if n > 2 and n <= 16:
         network = DV_network()
         network.generate_network(n)
-        network.simulate()
         network.show()
+        network.simulate()
+        plt.show()
     else:
         print("Il numero di nodi deve essere maggiore di zero.")
     sys.exit(0)
