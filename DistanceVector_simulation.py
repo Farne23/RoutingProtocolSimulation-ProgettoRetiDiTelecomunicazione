@@ -196,8 +196,6 @@ class DV_network:
         # Disegno del grafo
         nx.draw(self.graph, pos, with_labels=True, node_color='lightblue', node_size=500, font_size=10)
         nx.draw_networkx_edge_labels(self.graph, pos, edge_labels=labels, font_color='red')
-             
-        plt.tight_layout()
        
     def simulate(self):
         """
