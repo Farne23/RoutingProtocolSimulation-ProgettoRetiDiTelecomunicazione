@@ -6,14 +6,15 @@ import sys
 class Router:
     """
     Classe router, modella il componenete fondamentale della rete su quale sarà possibile studiare il funzionamento del prtotocollo.
-    Ogni router sarà caratterizzato da un nome e conterrà al suo interno la tabella di rooting.
+    Ogni router sarà caratterizzato da un nome e conterrà al suo interno la tabella di routing, un set contenente i nomi dei router adiacenti ed un
+    buffer per le routing table ricevute ad ogni iterazione dell'algoritmo .
     """
     def __init__(self, name):
         """
         Inizializzazione router, passato come paramtero il nome.
         La tabella di routing, verrà rappresentata tramite un dizionario che assocerà a ciascuna destinazione 
         il relativo costo e il next hop. Verrá mantenuto un set contenente i nomi dei router adiacenti ed un
-        buffer, per le routing table ricevute ad ogni iterazione dell'algoritmo.
+        buffer per le routing table ricevute ad ogni iterazione dell'algoritmo.
         
         :param name: nome da assegnare al router
         """
